@@ -302,9 +302,10 @@ func handleConnection(clientConn net.Conn) {
 			"nginx, malformed data"
 
 		// Write the response to the connection
-		_, err := clientConn.Write([]byte(response))
-		if err != nil {
-			log.Println("Error writing response:", err)
+		// Fix: Use a different variable name to avoid shadowing
+		_, writeErr := clientConn.Write([]byte(response))
+		if writeErr != nil {
+			log.Println("Error writing response:", writeErr)
 		}
 		return
 	}

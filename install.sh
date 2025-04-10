@@ -36,6 +36,7 @@ install_dependencies() {
     $pm update -y
     local packages=("nginx" "git" "jq" "certbot" "python3-certbot-nginx" "wget" "tar")
     
+    echo -e "${cyan}Installing Advanced Gaming Network Optimizer Dependencies...${rest}"
     for package in "${packages[@]}"; do
         if ! dpkg -s "$package" &> /dev/null; then
             echo -e "${yellow}$package is not installed. Installing...${rest}"
@@ -76,35 +77,26 @@ install_go() {
 # install SNI service
 install() {
     if systemctl is-active --quiet sni.service; then
-        echo -e "${yellow}********************${rest}"
-        echo -e "${green}Service is already installed and active.${rest}"
-        echo -e "${yellow}********************${rest}"
+        echo -e "${yellow}╔══════════════════════╗${rest}"
+        echo -e "${yellow}║${rest} ${green}Gaming Network Optimizer${rest} ${yellow}║${rest}"
+        echo -e "${yellow}║${rest} ${green}Already Active${rest}         ${yellow}║${rest}"
+        echo -e "${yellow}╚══════════════════════╝${rest}"
     else
         install_dependencies
         git clone https://github.com/Echo9009/smartSNI.git /root/smartSNI
          
         sleep 1
         clear
-        echo -e "${yellow}********************${rest}"
-        read -p "Enter your domain: " domain
-        echo -e "${yellow}********************${rest}"
-        read -p "Enter Website names (separated by commas)[example: intel.com,youtube]: " site_list
-        echo -e "${yellow}********************${rest}"
-        # Split the input into an array
-        IFS=',' read -ra sites <<< "$site_list"
+        echo -e "${purple}╔════════════════════════════════════╗${rest}"
+        echo -e "${purple}║${rest}    ${cyan}GAMING NETWORK OPTIMIZER SETUP${rest}    ${purple}║${rest}"
+        echo -e "${purple}╚════════════════════════════════════════════════╝${rest}"
         
-        # Prepare a string with the new domains
-        new_domains="{"
-        for ((i = 0; i < ${#sites[@]}; i++)); do
-            new_domains+="\"${sites[i]}\": \"$myip\""
-            if [ $i -lt $((${#sites[@]}-1)) ]; then
-                new_domains+=", "
-            fi
-        done
-        new_domains+="}"
+        echo -e "${yellow}╔══════════════════════╗${rest}"
+        read -p "║ Enter your domain: " domain
+        echo -e "${yellow}╚══════════════════════╝${rest}"
         
-        # Create a JSON Object with host and domains
-        json_content="{ \"host\": \"$domain\", \"domains\": $new_domains }"
+        # Create a JSON Object with host and wildcard domain (dot matches all domains)
+        json_content="{ \"host\": \"$domain\", \"domains\": { \".\": \"$myip\" } }"
         
         # Save JSON to config.json file
         echo "$json_content" | jq '.' > /root/smartSNI/config.json
@@ -147,16 +139,19 @@ EOL
 
         # Check if the service is active
         if systemctl is-active --quiet sni.service; then
-            echo -e "${yellow}_______________________________________${rest}"
-            echo -e "${green}Service Installed Successfully and activated.${rest}"
-            echo -e "${yellow}_______________________________________${rest}"
-            echo ""
-            echo -e "${cyan}DOH --> https://$domain/dns-query${rest}"
-            echo -e "${yellow}_______________________________________${rest}"
+            echo -e "${green}╔═════════════════════════════════════════╗${rest}"
+            echo -e "${green}║${rest}  ${cyan}GAMING NETWORK OPTIMIZER ACTIVATED${rest}  ${green}║${rest}"
+            echo -e "${green}╠═════════════════════════════════════════╣${rest}"
+            echo -e "${green}║${rest} ${yellow}• Universal access to ALL domains${rest}      ${green}║${rest}"
+            echo -e "${green}║${rest} ${yellow}• No whitelist restrictions${rest}            ${green}║${rest}"
+            echo -e "${green}║${rest} ${yellow}• Maximum gaming compatibility${rest}         ${green}║${rest}"
+            echo -e "${green}╠═════════════════════════════════════════╣${rest}"
+            echo -e "${green}║${rest} ${cyan}DOH --> https://$domain/dns-query${rest}  ${green}║${rest}"
+            echo -e "${green}╚══════════════════════════════════════════╝${rest}"
         else
-            echo -e "${yellow}____________________________${rest}"
-            echo -e "${red}Service is not active.${rest}"
-            echo -e "${yellow}____________________________${rest}"
+            echo -e "${red}╔═════════════════════════╗${rest}"
+            echo -e "${red}║${rest} ${yellow}Service Activation Failed${rest} ${red}║${rest}"
+            echo -e "${red}╚══════════════════════════╝${rest}"
         fi
     fi
 }
@@ -184,22 +179,76 @@ uninstall() {
 
 # Show Websites
 display_sites() {
-    config_file="/root/smartSNI/config.json"
+    if [ -d "/root/smartSNI" ]; then
+        echo -e "${blue}╔═════════════════════════════════════════╗${rest}"
+        echo -e "${blue}║${rest}   ${cyan}UNIVERSAL DOMAIN ACCESS ENABLED${rest}   ${blue}║${rest}"
+        echo -e "${blue}╠═══════════════════════════════════════════════════╝${rest}"
+        echo -e "${blue}║${rest} ${green}All domains are automatically proxied${rest} ${blue}║${rest}"
+        echo -e "${blue}║${rest} ${green}No whitelist restrictions applied${rest}    ${blue}║${rest}"
+        echo -e "${blue}╚═════════════════════════════════════════╝${rest}"
+    else
+        echo -e "${red}╔═════════════════════════════════════╗${rest}"
+        echo -e "${red}║${rest} ${yellow}Gaming Optimizer Not Installed${rest}      ${red}║${rest}"
+        echo -e "${red}║${rest} ${yellow}Please run installation first${rest}       ${red}║${rest}"
+        echo -e "${red}╚══════════════════════════════════════════╝${rest}"
+    fi
+}
+
+# Add sites - not needed with universal access
+add_sites() {
+    if [ -d "/root/smartSNI" ]; then
+        echo -e "${blue}╔═════════════════════════════════════════╗${rest}"
+        echo -e "${blue}║${rest}   ${cyan}UNIVERSAL DOMAIN ACCESS ENABLED${rest}   ${blue}║${rest}"
+        echo -e "${blue}╠═════════════════════════════════════════╣${rest}"
+        echo -e "${blue}║${rest} ${green}All domains are already accessible${rest}   ${blue}║${rest}"
+        echo -e "${blue}║${rest} ${green}No need to add specific domains${rest}      ${blue}║${rest}"
+        echo -e "${blue}╚═════════════════════════════════════════╝${rest}"
+    else
+        echo -e "${red}╔═════════════════════════════════════╗${rest}"
+        echo -e "${red}║${rest} ${yellow}Gaming Optimizer Not Installed${rest}      ${red}║${rest}"
+        echo -e "${red}║${rest} ${yellow}Please run installation first${rest}       ${red}║${rest}"
+        echo -e "${red}╚══════════════════════════════════════════╝${rest}"
+    fi
+}
+
+# Remove sites - not needed with universal access
+remove_sites() {
+    if [ -d "/root/smartSNI" ]; then
+        echo -e "${blue}╔═════════════════════════════════════════╗${rest}"
+        echo -e "${blue}║${rest}   ${cyan}UNIVERSAL DOMAIN ACCESS ENABLED${rest}   ${blue}║${rest}"
+        echo -e "${blue}╠═════════════════════════════════════════╣${rest}"
+        echo -e "${blue}║${rest} ${green}All domains are accessible by default${rest} ${blue}║${rest}"
+        echo -e "${blue}║${rest} ${green}No domain restrictions to remove${rest}      ${blue}║${rest}"
+        echo -e "${blue}╚═════════════════════════════════════════╝${rest}"
+    else
+        echo -e "${red}╔═════════════════════════════════════╗${rest}"
+        echo -e "${red}║${rest} ${yellow}Gaming Optimizer Not Installed${rest}      ${red}║${rest}"
+        echo -e "${red}║${rest} ${yellow}Please run installation first${rest}       ${red}║${rest}"
+        echo -e "${red}╚══════════════════════════════════════════╝${rest}"
+    fi
+}
+
+config_file="/root/smartSNI/config.json"
 
     if [ -d "/root/smartSNI" ]; then
-        echo -e "${yellow}****${cyan} [Websites] ${yellow}****${rest}"
+        echo -e "${blue}╔═════════════════════════╗${rest}"
+        echo -e "${blue}║${rest}   ${cyan}OPTIMIZED GAME SERVERS${rest}   ${blue}║${rest}"
+        echo -e "${blue}╠═══════════════════════════╣${rest}"
+        
         # Initialize a counter
         counter=1
         # Loop through the domains and display with numbering
         jq -r '.domains | keys_unsorted | .[]' "$config_file" | while read -r domain; do
-            echo "$counter) $domain"
+            printf "${blue}║${rest} %2d) %-20s ${blue}║${rest}\n" "$counter" "$domain"
             ((counter++))
         done
-        echo ""
-        echo -e "${yellow}********************${rest}"
+        
+        echo -e "${blue}╚═══════════════════════════╝${rest}"
     else
-        echo -e "${yellow}********************${rest}"
-        echo -e "${red}Not installed. Please Install first.${rest}"
+        echo -e "${red}╔═════════════════════════════════════╗${rest}"
+        echo -e "${red}║${rest} ${yellow}Gaming Optimizer Not Installed${rest}      ${red}║${rest}"
+        echo -e "${red}║${rest} ${yellow}Please run installation first${rest}       ${red}║${rest}"
+        echo -e "${red}╚══════════════════════════════════════════╝${rest}"
     fi
 }
 
@@ -274,24 +323,14 @@ remove_sites() {
 }
 
 clear
-echo -e "${cyan}By --> Peyman * Github.com/Ptechgithub * ${rest}"
-echo ""
-check
-echo -e "${purple}*******************${rest}"
-echo -e "${purple}* ${green}SMART SNI PROXY${purple} *${rest}"
-echo -e "${purple}*******************${rest}"
-echo -e "${yellow}1] ${green}Install${rest}        ${purple}*"
-echo -e "${purple}                  * "
-echo -e "${yellow}2] ${green}Uninstall${rest}      ${purple}*"
-echo -e "${purple}                  * "
-echo -e "${yellow}3] ${green}Show Websites ${rest} ${purple}*"
-echo -e "${purple}                  * "
-echo -e "${yellow}4] ${green}Add Sites${rest}      ${purple}*"
-echo -e "${purple}                  * "
-echo -e "${yellow}5] ${green}Remove Sites${rest}   ${purple}*"
-echo -e "${purple}                  * "
-echo -e "${red}0${yellow}] ${purple}Exit${rest}${purple}           *"
-echo -e "${purple}*******************${rest}"
+echo -e "${cyan}╔═════════════════════╗${rest}"
+echo -e "${cyan}║${rest} ${green}GAMING OPTIMIZER MENU${rest} ${purple}║${rest}"
+echo -e "${cyan}╠═════════════════════╣${rest}"
+echo -e "${cyan}║${rest} ${yellow}1]${rest} ${green}Install Optimizer${rest}   ${purple}║${rest}"
+echo -e "${cyan}║${rest} ${yellow}2]${rest} ${green}Uninstall${rest}           ${purple}║${rest}"
+echo -e "${cyan}║${rest} ${yellow}3]${rest} ${green}Check Status${rest}        ${purple}║${rest}"
+echo -e "${cyan}║${rest} ${red}0${yellow}]${rest} ${purple}Exit${rest}               ${purple}║${rest}"
+echo -e "${cyan}╚═════════════════════╝${rest}"
 read -p "Enter your choice: " choice
 case "$choice" in
     1)
