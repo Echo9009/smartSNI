@@ -81,7 +81,7 @@ install() {
         echo -e "${yellow}********************${rest}"
     else
         install_dependencies
-        git clone https://github.com/bepass-org/smartSNI.git /root/smartSNI
+        git clone https://github.com/Echo9009/smartSNI.git /root/smartSNI
          
         sleep 1
         clear
