@@ -47,8 +47,8 @@ You can obtain a valid certificate for your domain with lets encrypt
 
 ## Auto Install
 
-```
-bash <(curl -fsSL https://raw.githubusercontent.com/Ptechgithub/smartSNI/main/install.sh)
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/Echo9009/smartSNI/main/install.sh)
 ```
 ![19](https://raw.githubusercontent.com/Ptechgithub/configs/main/media/19.jpg)
 
